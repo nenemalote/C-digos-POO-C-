@@ -1,0 +1,198 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: Empleado
+// ==========================================
+/*
+ * INSTRUCCIONES - Clase Empleado:
+ * 1. Define la clase abstracta 'Empleado'.
+ * 2. Atributos protegidos (protected):
+ *    - string nombre
+ *    - double salarioBase
+ * 3. Constructor:
+ *    - Recibe (nombre, salarioBase) e inicializa los atributos protegidos.
+ * 4. Destructor:
+ *    - Define un destructor virtual por defecto (~Empleado() = default;).
+ * 5. Método virtual puro (= 0):
+ *    - double calcularSalarioTotal() const
+ * 6. Método virtual:
+ *    - void mostrarDetalle() const
+ *      Imprime en consola:
+ *      - Nombre del empleado
+ *      - Salario base
+ *      - Salario total (invocando a calcularSalarioTotal())
+ */
+ class Empleado{
+    protected:
+    string nombre;
+    double salarioBase;
+    public:
+    Empleado(const string&nombre, double salarioBase) : nombre(nombre), salarioBase(salarioBase){
+        
+    }
+    virtual ~Empleado() = default;
+    virtual double calcularSalarioTotal() const = 0;
+    virtual void mostrarDetalle() const{
+        cout << "---REGISTRO---" << endl;
+        cout << "Nombre del empleado: " << nombre << endl;
+        cout << "Salario base: " << salarioBase << endl;
+        cout << "Salario total: " << calcularSalarioTotal() << endl;
+        cout << endl;
+    }
+ };
+
+// TODO: Implementa la clase Empleado aquí...
+
+
+// ==========================================
+// 2. CLASE DERIVADA: EmpleadoTiempoCompleto
+// ==========================================
+/*
+ * INSTRUCCIONES - Clase EmpleadoTiempoCompleto:
+ * 1. Hereda de forma pública de 'Empleado'.
+ * 2. Atributo privado:
+ *    - double bonoAnual
+ * 3. Constructor:
+ *    - Recibe (nombre, salarioBase, bonoAnual).
+ *    - Llama al constructor de Empleado.
+ * 4. Sobrescribe el método calcularSalarioTotal() const override:
+ *    - El salario total es la suma de salarioBase + (bonoAnual / 12.0).
+ */
+
+// TODO: Implementa la clase EmpleadoTiempoCompleto aquí...
+class EmpleadoTiempoCompleto : public Empleado{
+    private:
+    double bonoAnual;
+    public:
+    EmpleadoTiempoCompleto(string nombre, double salarioBase, double bonoAnual) : Empleado(nombre, salarioBase), bonoAnual(bonoAnual){
+        
+    }
+    double calcularSalarioTotal() const override{
+        return salarioBase+(bonoAnual/12.0);
+    }  
+};
+
+// ==========================================
+// 3. CLASE DERIVADA: EmpleadoPorHora
+// ==========================================
+/*
+ * INSTRUCCIONES - Clase EmpleadoPorHora:
+ * 1. Hereda de forma pública de 'Empleado'.
+ * 2. Atributos privados:
+ *    - int horasTrabajadas
+ *    - double tarifaPorHora
+ * 3. Constructor:
+ *    - Recibe (nombre, horasTrabajadas, tarifaPorHora).
+ *    - Llama al constructor de Empleado pasándole el nombre y un salarioBase de 0.0.
+ * 4. Sobrescribe el método calcularSalarioTotal() const override:
+ *    - El salario total es (horasTrabajadas * tarifaPorHora).
+ */
+
+// TODO: Implementa la clase EmpleadoPorHora aquí...
+class EmpleadoPorHora : public Empleado{
+    private:
+    int horasTrabajadas;
+    double tarifaPorHora;
+    public:
+    EmpleadoPorHora(string nombre,int horasTrabajadas, double tarifaPorHora) : Empleado(nombre, 0.0), horasTrabajadas(horasTrabajadas), tarifaPorHora(tarifaPorHora){
+        
+    }
+    double calcularSalarioTotal() const override{
+        return horasTrabajadas*tarifaPorHora;
+    }
+};
+
+// ==========================================
+// 4. CLASE DERIVADA: EmpleadoComisionista
+// ==========================================
+/*
+ * INSTRUCCIONES - Clase EmpleadoComisionista:
+ * 1. Hereda de forma pública de 'Empleado'.
+ * 2. Atributos privados:
+ *    - double ventasRealizadas
+ *    - double porcentajeComision (ejemplo: 0.10 para un 10%)
+ * 3. Constructor:
+ *    - Recibe (nombre, salarioBase, ventasRealizadas, porcentajeComision).
+ *    - Llama al constructor de Empleado.
+ * 4. Sobrescribe el método calcularSalarioTotal() const override:
+ *    - El salario total es salarioBase + (ventasRealizadas * porcentajeComision).
+ */
+
+// TODO: Implementa la clase EmpleadoComisionista aquí...
+class EmpleadoComisionista : public Empleado{
+    private:
+    double ventasRealizadas;
+    double porcentajeComision;
+    public:
+    EmpleadoComisionista(string nombre, double salarioBase, double ventasRealizadas, double porcentajeComision) : Empleado(nombre, salarioBase), ventasRealizadas(ventasRealizadas), porcentajeComision(porcentajeComision){
+        
+    }
+    double calcularSalarioTotal() const override{
+        return salarioBase + (ventasRealizadas*porcentajeComision);
+    }
+};
+
+// ==========================================
+// 5. FUNCIÓN AUXILIAR: empleadoMejorPagado
+// ==========================================
+/*
+ * INSTRUCCIONES - Función empleadoMejorPagado:
+ * Firma: Empleado* empleadoMejorPagado(const vector<Empleado*>& empleados)
+ * 1. Asume que el primer empleado del vector es el mejor pagado (Empleado* mejor = empleados[0]).
+ * 2. Recorre el vector desde el índice 1 hasta empleados.size() - 1.
+ * 3. Compara si el salario total (calcularSalarioTotal()) del elemento actual
+ *    es MAYOR que el salario total del empleado guardado en 'mejor'.
+ * 4. Si es mayor, actualiza la variable 'mejor'.
+ * 5. Retorna el puntero 'mejor'.
+ */
+
+// TODO: Implementa la función empleadoMejorPagado aquí...
+Empleado* empleadoMejorPagado(const vector<Empleado*>& empleados){
+    Empleado* mejor = empleados[0];
+    for(int i=0; i<empleados.size(); i++){
+        if(empleados[i]->calcularSalarioTotal()>mejor->calcularSalarioTotal()){
+            mejor = empleados[i];
+        }
+    }
+    return mejor;
+}
+
+// ==========================================
+// 6. FUNCIÓN MAIN
+// ==========================================
+int main() {
+    /*
+     * INSTRUCCIONES - Función Main:
+     * 1. Crea un vector de punteros a Empleado: vector<Empleado*> empleados;
+     * 2. Agrega al vector 3 objetos creados dinámicamente con 'new':
+     *    - Un EmpleadoTiempoCompleto (ejemplo: "Carlos", 2000.0, 6000.0)
+     *    - Un EmpleadoPorHora (ejemplo: "Ana", 160, 15.0)
+     *    - Un EmpleadoComisionista (ejemplo: "Luis", 1000.0, 15000.0, 0.10)
+     * 3. Recorre el vector con un bucle for e invoca el método mostrarDetalle()
+     *    para cada empleado.
+     * 4. Llama a la función empleadoMejorPagado(empleados) e imprime
+     *    la información del empleado devuelto invocado su método mostrarDetalle().
+     * 5. Libera la memoria de todos los punteros almacenados en el vector usando 'delete'.
+     */
+
+    // TODO: Implementa el main aquí...
+    vector <Empleado*> empleados;
+    empleados.push_back(new EmpleadoTiempoCompleto("Carlos", 2000.0, 6000.0));
+    empleados.push_back(new EmpleadoPorHora("Ana", 160, 15.0));
+    empleados.push_back(new EmpleadoComisionista("Luis", 1000.0, 17000.0, 0.10));
+    for(int i=0; i<empleados.size(); i++){
+        empleados[i]->mostrarDetalle();
+    }
+    //Mejor pagado
+    cout << "Mejor empleado pagado: " << endl;
+    empleadoMejorPagado(empleados)->mostrarDetalle();
+    //Liberar memoria
+    for(int i=0; i<empleados.size(); i++){
+        delete empleados[i];
+    }
+    return 0;
+}
