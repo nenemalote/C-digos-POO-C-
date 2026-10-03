@@ -1,0 +1,137 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: Producto
+
+// ==========================================
+/*
+ * INSTRUCCIONES - Clase Producto:
+ * 1. Define la clase abstracta 'Producto'.
+ * 2. Atributos protegidos (protected):
+ *    - string nombre
+ *    - double precioBase
+ * 3. Constructor:
+ *    - Recibe el nombre y el precio base e inicializa los atributos protegidos.
+ * 4. Destructor:
+ *    - Define un destructor virtual por defecto (~Producto() = default;).
+ * 5. Método virtual puro (= 0):
+ *    - double calcularPrecioFinal() const
+ * 6. Método virtual:
+ *    - void mostrarInfo() const
+ *      Imprime en consola:
+ *      - Nombre del producto
+ *      - Precio base
+ *      - Precio final (invocando a calcularPrecioFinal())
+ */
+
+// TODO: Implementa la clase Producto aquí...
+class Producto{
+    protected:
+    string nombre;
+    double precioBase;
+    public:
+    Producto(const string&nombre,  double precioBase) : nombre(nombre), precioBase(precioBase){
+
+    }
+    virtual ~Producto() = default;
+    virtual double calcularPrecioFinal() const = 0;
+    virtual void mostrarInfo() const{ 
+        cout << "Nombre del producto: " << nombre << endl;
+        cout << "Precio base: " << precioBase << " USD" << endl;
+        cout << "Precio final " << calcularPrecioFinal() << "USD" << endl;
+        }
+};
+
+// ==========================================
+// 2. CLASE DERIVADA: ProductoElectronico
+// ==========================================
+class ProductoElectronico : public Producto{
+    private:
+    int garantiaMeses;
+    public:
+    ProductoElectronico(string nombre, double precioBase, int garantiaMeses) : Producto(nombre, precioBase), garantiaMeses(garantiaMeses){
+
+    }
+    double calcularPrecioFinal() const override{
+        if(garantiaMeses>12){
+            return precioBase+15.0;
+        }else{
+            return precioBase;
+        }
+    }
+};
+
+
+// ==========================================
+// 3. CLASE DERIVADA: ProductoAlimenticio
+
+class ProductoAlimenticio : public Producto{
+    private:
+    int diasParaCaducar;
+    public: 
+    ProductoAlimenticio(string nombre, double precioBase, int diasParaCaducar) : Producto(nombre, precioBase), diasParaCaducar(diasParaCaducar){
+
+    }
+    double calcularPrecioFinal() const override{
+        if(diasParaCaducar<=3){
+            return precioBase*0.80;
+        }else{
+            return precioBase;
+        }
+    }
+};
+
+// ==========================================
+// 4. CLASE DERIVADA: ProductoRopa
+
+class ProductoRopa : public Producto{
+    private: 
+    string talle;
+    public:
+    ProductoRopa(string nombre, double precioBase, string talle) : Producto(nombre, precioBase), talle(talle){
+
+    }
+    double calcularPrecioFinal() const override{
+        if(talle=="XL"){
+            return precioBase*1.10;
+        }else{
+            return precioBase;
+        }
+    }
+};
+
+
+Producto* productoMasBarato(vector<Producto*>& productos){
+    Producto* masBarato = productos[0];
+    for(int i=0; i<productos.size(); i++){
+        if (productos[i]->calcularPrecioFinal() < masBarato->calcularPrecioFinal()) {
+            masBarato = productos[i];
+        }
+    }
+    return masBarato;
+}
+
+// ==========================================
+// 6. FUNCIÓN MAIN
+// ==========================================
+int main() {
+
+    vector <Producto*> productos;
+    productos.push_back(new ProductoElectronico("Sony", 700, 24));
+    productos.push_back(new ProductoAlimenticio("SuperCerdo", 9, 10));
+    productos.push_back(new ProductoRopa("HyM", 15, "XL"));
+    for(int i=0; i<productos.size(); i++){
+        productos[i]->mostrarInfo();
+        cout << endl;
+    }
+    cout << "Producto mas barato: " << endl;
+    productoMasBarato(productos)->mostrarInfo();
+    for(int i=0; i<productos.size(); i++){
+        delete productos[i];
+    }
+    return 0;
+}
