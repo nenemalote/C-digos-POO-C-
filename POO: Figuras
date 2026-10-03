@@ -1,0 +1,128 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ---------------- Clase abstracta Figura ----------------
+class Figura {
+protected:
+    string nombre;
+
+public:
+    Figura(const string& nombre) : nombre(nombre) {}
+
+    virtual ~Figura() = default;
+
+    virtual double area() const = 0;
+
+    virtual double perimetro() const = 0;
+
+    virtual void mostrar() const {
+        cout << "El area es: " << area() << endl;
+        cout << "El perimetro es: " << perimetro() << endl;
+        cout << "El nombre es: " << nombre << endl;
+    }
+};
+
+// ---------------- Rectangulo ----------------
+class Rectangulo : public Figura {
+    double base;
+    double altura;
+
+public:
+    Rectangulo(double base, double altura)
+        : Figura("Rectangulo"), base(base), altura(altura) {}
+
+    double area() const override {
+        return base * altura;
+    }
+
+    double perimetro() const override {
+        return 2 * (base + altura);
+    }
+};
+
+// ---------------- Circulo ----------------
+class Circulo : public Figura {
+    double radio;
+    const double PI = 3.14159265;
+
+public:
+    Circulo(double radio)
+        : Figura("Circulo"), radio(radio) {}
+
+    double area() const override {
+        return PI * radio * radio;
+    }
+
+    double perimetro() const override {
+        return 2 * PI * radio;
+    }
+};
+
+// ---------------- Triangulo ----------------
+class Triangulo : public Figura {
+    double base;
+    double altura;
+    double ladoa;
+    double ladob;
+
+public:
+    Triangulo(double base, double altura, double ladoa, double ladob)
+        : Figura("Triangulo"),
+          base(base),
+          altura(altura),
+          ladoa(ladoa),
+          ladob(ladob) {}
+
+    double area() const override {
+        return (base * altura) / 2;
+    }
+
+    double perimetro() const override {
+        return ladoa + ladob + base;
+    }
+};
+
+// ---------------- Mayor area ----------------
+Figura* mayorArea(vector<Figura*>& figuras) {
+
+    Figura* mayor = figuras[0];
+
+    for (int i = 1; i < figuras.size(); i++) {
+
+        if (figuras[i]->area() > mayor->area()) {
+            mayor = figuras[i];
+        }
+    }
+
+    return mayor;
+}
+
+// ---------------- Main ----------------
+int main()
+{
+    vector<Figura*> figuras;
+
+    figuras.push_back(new Rectangulo(10, 9));
+    figuras.push_back(new Circulo(75));
+    figuras.push_back(new Triangulo(3, 6, 3, 3));
+
+    // Mostrar todas las figuras
+    for (int i = 0; i < figuras.size(); i++) {
+        figuras[i]->mostrar();
+        cout << endl;
+    }
+
+    // Mostrar figura con mayor area
+    cout << "Figura con mayor area:" << endl;
+    mayorArea(figuras)->mostrar();
+
+    // Liberar memoria
+    for (int i = 0; i < figuras.size(); i++) {
+        delete figuras[i];
+    }
+
+    return 0;
+}
