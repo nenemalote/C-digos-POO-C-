@@ -1,0 +1,156 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: Vehiculo
+// Atributos protegidos: string marca, double costoBaseMantenimiento
+// Constructor: (marca, costoBaseMantenimiento)
+// Destructor: virtual por defecto
+// Método virtual puro: double calcularCostoMantenimiento() const = 0
+// Método virtual: void mostrarReporte() const (imprime marca, costo base y total)
+// ==========================================
+
+// TODO: Implementa la clase Vehiculo aquí...
+class Vehiculo{
+    protected:
+    string marca;
+    double costoBaseMantenimiento;
+    public:
+    Vehiculo(const string&marca, double costoBaseMantenimiento) : marca(marca), costoBaseMantenimiento(costoBaseMantenimiento){
+        
+    }
+    virtual ~Vehiculo() = default;
+    virtual double calcularCostoMantenimiento() const = 0;
+    virtual void mostrarReporte() const{
+        
+        cout << "MARCA: " << marca << endl;
+        cout << "COSTO BASE: " << costoBaseMantenimiento << endl;
+        cout << "TOTAL: " << calcularCostoMantenimiento() << endl;
+        cout << endl;
+    }
+};
+
+
+// ==========================================
+// 2. CLASE DERIVADA: Auto
+// Hereda de Vehiculo
+// Atributo privado: int kilometraje
+// Constructor: (marca, costoBaseMantenimiento, kilometraje)
+// Regla: si kilometraje > 50000 -> costoBaseMantenimiento + 150.0; sino costoBaseMantenimiento
+// ==========================================
+
+// TODO: Implementa la clase Auto aquí...
+class Auto : public Vehiculo{
+    private:
+    int kilometraje;
+    public:
+    Auto(string marca, double costoBaseMantenimiento, int kilometraje) : Vehiculo(marca, costoBaseMantenimiento), kilometraje(kilometraje){
+        
+    }
+    double calcularCostoMantenimiento() const override{
+        if(kilometraje>50000){
+            return costoBaseMantenimiento+150.0;
+        }else{
+            return costoBaseMantenimiento;
+        }
+    }  
+};
+
+
+// ==========================================
+// 3. CLASE DERIVADA: Moto
+// Hereda de Vehiculo
+// Atributo privado: int cilindrada
+// Constructor: (marca, costoBaseMantenimiento, cilindrada)
+// Regla: si cilindrada >= 500 -> costoBaseMantenimiento * 1.20; sino costoBaseMantenimiento
+// ==========================================
+
+// TODO: Implementa la clase Moto aquí...
+class Moto : public Vehiculo{
+    private:
+    int cilindrada;
+    public:
+    Moto(string marca, double costoBaseMantenimiento, int cilindrada) : Vehiculo(marca, costoBaseMantenimiento), cilindrada(cilindrada){
+        
+    }
+    double calcularCostoMantenimiento() const override{
+        if(cilindrada>=500){
+            return costoBaseMantenimiento*1.20;
+        }
+        else{
+            return costoBaseMantenimiento;
+        }
+    }
+};
+
+// ==========================================
+// 4. CLASE DERIVADA: Camion
+// Hereda de Vehiculo
+// Atributo privado: int toneladasCapacidad
+// Constructor: (marca, costoBaseMantenimiento, toneladasCapacidad)
+// Regla: costoBaseMantenimiento + (toneladasCapacidad * 50.0)
+// ==========================================
+
+// TODO: Implementa la clase Camion aquí...
+class Camion : public Vehiculo{
+    private:
+    int toneladasCapacidad;
+    public:
+    Camion(string marca, double costoBaseMantenimiento, int toneladasCapacidad) : Vehiculo(marca, costoBaseMantenimiento), toneladasCapacidad(toneladasCapacidad){
+        
+    }
+    double calcularCostoMantenimiento() const override{
+        return costoBaseMantenimiento+(toneladasCapacidad*50.0);
+    }
+};
+
+// ==========================================
+// 5. FUNCIÓN AUXILIAR: vehiculoMantenimientoMasCostoso
+// Firma: Vehiculo* vehiculoMantenimientoMasCostoso(const vector<Vehiculo*>& vehiculos)
+// Retorna el puntero al vehículo con el mayor costo de mantenimiento
+// ==========================================
+Vehiculo* vehiculoMantenimientoMasCostoso(const vector <Vehiculo*>& vehiculos){
+    Vehiculo* masCostoso = vehiculos[0];
+    for(int i=0; i<vehiculos.size(); i++){
+        if(vehiculos[i]->calcularCostoMantenimiento()>masCostoso->calcularCostoMantenimiento()){
+            masCostoso = vehiculos[i];
+        }
+    }
+    return masCostoso;
+}
+
+// TODO: Implementa la función auxiliar aquí...
+
+
+// ==========================================
+// 6. MAIN
+// 1. Crear vector<Vehiculo*>
+// 2. Agregar con new:
+//    - Auto("Toyota", 200.0, 60000)
+//    - Moto("Yamaha", 100.0, 600)
+//    - Camion("Volvo", 500.0, 10)
+// 3. Bucle para llamar mostrarReporte() de cada uno
+// 4. Imprimir el más costoso llamando a la función auxiliar
+// 5. Liberar memoria con delete
+// ==========================================
+
+int main() {
+    // TODO: Implementa el main aquí...
+    vector <Vehiculo*> vehiculos;
+    vehiculos.push_back(new Auto("Toyota", 200.0, 60000));
+    vehiculos.push_back(new Moto("Yamaha", 100.0, 600));
+    vehiculos.push_back(new Camion("Volvo", 500.0, 10));
+    for(int i=0; i<vehiculos.size(); i++){
+        cout << "---REGISTRO---" << endl;
+        vehiculos[i]->mostrarReporte();
+    }
+    cout << "---REGISTRO DEL Vehiculo mas costoso--- " << endl;
+    vehiculoMantenimientoMasCostoso(vehiculos)->mostrarReporte();
+    for(int i=0; i<vehiculos.size(); i++){
+        delete vehiculos[i];
+    }
+    return 0;
+}
