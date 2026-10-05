@@ -1,0 +1,128 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: CuentaBancaria
+// Atributos protegidos: string titular, double saldo
+// Constructor: (titular, saldo)
+// Destructor: virtual por defecto
+// Método virtual puro: double calcularInteresAnual() const = 0
+// Método virtual: void mostrarEstado() const (imprime titular, saldo e interes)
+// ==========================================
+
+// TODO: Implementa la clase CuentaBancaria aquí...
+class CuentaBancaria{
+    protected:
+    string titular;
+    double saldo;
+    public:
+    CuentaBancaria(string titular, double saldo) : titular(titular), saldo(saldo){
+        
+    }
+    virtual ~CuentaBancaria() = default;
+    virtual double calcularInteresAnual() const = 0;
+    virtual void mostrarEstado() const{
+        cout << "Titular: " << titular << endl;
+        cout << "Saldo: " << saldo << endl;
+        cout << "Interes: " << calcularInteresAnual() << " %" << endl;
+        cout << endl;
+    }
+    
+};
+
+// ==========================================
+// 2. CLASE DERIVADA: CuentaAhorro
+// Hereda de CuentaBancaria
+// Atributo privado: double tasaInteres (ej: 0.05 para 5%)
+// Constructor: (titular, saldo, tasaInteres)
+// Regla: interes = saldo * tasaInteres
+// ==========================================
+
+// TODO: Implementa la clase CuentaAhorro aquí...
+
+class CuentaAhorro : public CuentaBancaria{
+    private:
+    double tasaInteres;
+    public:
+    CuentaAhorro(string titular, double saldo, double tasaInteres) : CuentaBancaria(titular, saldo), tasaInteres(tasaInteres){
+        
+    }
+    double calcularInteresAnual() const override{
+        return saldo*tasaInteres;
+    }
+};
+// ==========================================
+// 3. CLASE DERIVADA: CuentaPlazoFijo
+// Hereda de CuentaBancaria
+// Atributos privados: double tasaInteres, int mesesPlazo
+// Constructor: (titular, saldo, tasaInteres, mesesPlazo)
+// Regla: si mesesPlazo >= 12 -> interes = saldo * (tasaInteres + 0.02); sino interes = saldo * tasaInteres
+// ==========================================
+
+// TODO: Implementa la clase CuentaPlazoFijo aquí...
+class CuentaPlazoFijo : public CuentaBancaria{
+    private:
+    double tasaInteres;
+    int mesesPlazo;
+    public:
+    CuentaPlazoFijo(string titular, double saldo, double tasaInteres, int mesesPlazo) : CuentaBancaria(titular, saldo), tasaInteres(tasaInteres), mesesPlazo(mesesPlazo){
+        
+    }
+    double calcularInteresAnual() const override{
+        if(mesesPlazo>=12){
+            return saldo*(tasaInteres+0.02);
+        }else{
+            return saldo*tasaInteres;
+        }
+    }  
+};
+
+// ==========================================
+// 4. FUNCIÓN AUXILIAR: cuentaConMayorInteres
+// Firma: CuentaBancaria* cuentaConMayorInteres(const vector<CuentaBancaria*>& cuentas)
+// Retorna el puntero a la cuenta que genera mayor interés anual
+// ==========================================
+
+// TODO: Implementa la función auxiliar aquí...
+CuentaBancaria* cuentaConMayorInteres(const vector<CuentaBancaria*>& cuentas){
+    CuentaBancaria* mayorInteres = cuentas[0];
+    for(int i=0; i<cuentas.size(); i++){
+        if(cuentas[i]->calcularInteresAnual()>mayorInteres->calcularInteresAnual()){
+            mayorInteres = cuentas[i];
+        }
+    }
+    return mayorInteres;
+}
+
+// ==========================================
+// 5. MAIN
+// 1. Crear vector<CuentaBancaria*>
+// 2. Agregar con new:
+//    - CuentaAhorro("Carlos", 1000.0, 0.04)
+//    - CuentaPlazoFijo("Ana", 2000.0, 0.05, 12)
+//    - CuentaPlazoFijo("Luis", 1500.0, 0.05, 6)
+// 3. Recorrer con bucle para llamar mostrarEstado()
+// 4. Muestrar la cuenta con mayor interés usando la función auxiliar
+// 5. Liberar memoria con delete
+// ==========================================
+
+int main() {
+    // TODO: Implementa el main aquí...
+    vector <CuentaBancaria*> cuenta;
+    cuenta.push_back(new CuentaAhorro("Carlos", 100.0, 0.04));
+    cuenta.push_back(new CuentaPlazoFijo("Ana", 2000.0, 0.05, 12));
+    cuenta.push_back(new CuentaPlazoFijo("Luis", 1500.0, 0.05, 6));
+    for(int i=0; i<cuenta.size(); i++){
+        cuenta[i]->mostrarEstado();
+    }
+    cout << "Cuenta con mas interes: " << endl;
+    cuentaConMayorInteres(cuenta)->mostrarEstado();
+    //Borrar memoria
+    for(int i=0; i<cuenta.size(); i++){
+        delete cuenta[i];
+    }
+    return 0;
+}
