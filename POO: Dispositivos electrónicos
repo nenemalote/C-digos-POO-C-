@@ -1,0 +1,127 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: Dispositivo
+// Atributos protegidos: string modelo, double consumoBaseWatts
+// Constructor: (modelo, consumoBaseWatts)
+// Destructor: virtual por defecto
+// Método virtual puro: double calcularConsumoDiario(double horasUso) const = 0
+// Método virtual: void mostrarInformacion() const (imprime modelo y consumo base)
+// ==========================================
+
+// TODO: Implementa la clase Dispositivo aquí...
+class Dispositivo{
+  protected:
+  string modelo;
+  double consumoBaseWatts;
+  public:
+  Dispositivo(string m, double c) : modelo(m), consumoBaseWatts(c){
+      
+  }
+  virtual ~Dispositivo() = default;
+  virtual double calcularConsumoDiario(double horasUso) const = 0;
+  virtual void mostrarInformacion() const{
+      cout << "Modelo: " << modelo << endl;
+      cout << "Consumo de base Watts: " << consumoBaseWatts << endl;
+  }
+};
+
+// ==========================================
+// 2. CLASE DERIVADA: Laptop
+// Hereda de Dispositivo
+// Atributo privado: bool modoAhorroEnergia
+// Constructor: (modelo, consumoBaseWatts, modoAhorroEnergia)
+// Regla: si modoAhorroEnergia es true -> consumoBaseWatts * 0.8 * horasUso / 1000.0 (en kWh)
+//        sino -> consumoBaseWatts * horasUso / 1000.0 (en kWh)
+// ==========================================
+
+// TODO: Implementa la clase Laptop aquí...
+class Laptop : public Dispositivo{
+    private:
+    bool modoAhorroEnergia;
+    public:
+    Laptop(string m, double c, bool modo) : Dispositivo(m, c), modoAhorroEnergia(modo){
+        
+    }
+    double calcularConsumoDiario(double horasUso) const override{
+        if(modoAhorroEnergia){
+            return (consumoBaseWatts*0.8*horasUso)/1000.0;
+        }else{
+            return (consumoBaseWatts*horasUso)/1000.0;
+        }
+    }
+};
+
+// ==========================================
+// 3. CLASE DERIVADA: Servidor
+// Hereda de Dispositivo
+// Atributo privado: int numeroCores
+// Constructor: (modelo, consumoBaseWatts, numeroCores)
+// Regla: (consumoBaseWatts + (numeroCores * 15.0)) * horasUso / 1000.0 (en kWh)
+// ==========================================
+
+// TODO: Implementa la clase Servidor aquí...
+class Servidor : public Dispositivo{
+    private:
+    int numeroCores;
+    public:
+    Servidor(string m, double c, int n) : Dispositivo(m, c), numeroCores(n){
+        
+    }
+    double calcularConsumoDiario(double horasUso) const override{
+        return (consumoBaseWatts+(numeroCores*15.0)) * horasUso/1000.0;
+    }
+};
+
+// ==========================================
+// 4. FUNCIÓN AUXILIAR: dispositivoMayorConsumo
+// Firma: Dispositivo* dispositivoMayorConsumo(const vector<Dispositivo*>& dispositivos, double horasUso)
+// Retorna el puntero al dispositivo que consume más kWh en las horas indicadas
+// ==========================================
+
+// TODO: Implementa la función auxiliar aquí...
+Dispositivo* dispositivoMayorConsumo(const vector <Dispositivo*>& dispositivos, double horasUso){
+    Dispositivo* mayorConsumo = dispositivos[0];
+    for(int i=0; i<dispositivos.size(); i++){
+        if(dispositivos[i]->calcularConsumoDiario(horasUso)>mayorConsumo->calcularConsumoDiario(horasUso)){
+            mayorConsumo = dispositivos[i];
+        }
+    }
+    return mayorConsumo;
+}
+
+// ==========================================
+// 5. MAIN
+// 1. Crear vector<Dispositivo*>
+// 2. Agregar con new:
+//    - Laptop("Dell XPS", 65.0, true)
+//    - Laptop("MacBook Pro", 100.0, false)
+//    - Servidor("PowerEdge", 400.0, 16)
+// 3. Recorrer con bucle e imprimir información y su consumo para 8 horas de uso
+// 4. Imprimir el dispositivo con mayor consumo usando la función auxiliar (para 8 horas)
+// 5. Liberar memoria con delete
+// ==========================================
+
+int main() {
+    // TODO: Implementa el main aquí...
+    vector <Dispositivo*> dispo;
+    dispo.push_back(new Laptop("Dell XPS", 65.0, true));
+    dispo.push_back(new Laptop("MacBook Pro", 100.0, false));
+    dispo.push_back(new Servidor("PowerEdge", 400.0, 16));
+    for(int i=0; i<dispo.size(); i++){
+        cout << "--INFORMACION-- n°" << i+1  << endl;
+        dispo[i]->mostrarInformacion();
+        cout << endl;
+    }
+    cout << "-----------------------" << endl;
+    cout << "Dispositivo con mas consumo: " << endl;
+    dispositivoMayorConsumo(dispo, 8.0)->mostrarInformacion();
+    for(int i=0; i<dispo.size(); i++){
+        delete dispo[i];
+    }
+    return 0;
+}
