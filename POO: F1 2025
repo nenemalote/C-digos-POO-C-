@@ -1,0 +1,141 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ==========================================
+// 1. CLASE ABSTRACTA: PilotoF1
+// Atributos protegidos: string nombre, string escuderia, int victorias
+// Constructor: (nombre, escuderia, victorias)
+// Getter: string getNombre() const
+// Destructor: virtual por defecto
+// Método virtual puro: int calcularPuntosTotales(int podios2do, int podios3ro) const = 0
+// Método virtual: void mostrarFicha() const (imprime nombre, escuderia y victorias)
+// ==========================================
+
+// TODO: Implementa la clase PilotoF1 aquí...
+class PilotoF1{
+  protected:
+  string nombre;
+  string escuderia;
+  int victorias;
+  public:
+  PilotoF1(string nombre, string escuderia, int victorias) : nombre(nombre), escuderia(escuderia), victorias(victorias){
+      
+  }
+  virtual ~PilotoF1() = default;
+  virtual int calcularPuntosTotales(int podio2do, int podio3ro) const = 0;
+  virtual void mostrarFicha() const{
+      cout << "Nombre: " << nombre << endl;
+      cout << "Escuderia: " << escuderia << endl;
+      cout << "Victorias: " << victorias << endl;
+  }
+};
+
+// ==========================================
+// 2. CLASE DERIVADA: PilotoTitular
+// Hereda de PilotoF1
+// Atributo privado: int vueltasRapidas
+// Constructor: (nombre, escuderia, victorias, vueltasRapidas)
+// Regla de puntos: 
+//   - Victorias: 25 pts c/u
+//   - Podios 2do lugar: 18 pts c/u
+//   - Podios 3er lugar: 15 pts c/u
+//   - Vueltas rápidas: 1 pt c/u
+// ==========================================
+
+// TODO: Implementa la clase PilotoTitular aquí...
+class PilotoTitular : public PilotoF1{
+    private:
+    int vueltasRapidas;
+    public:
+    PilotoTitular(string nombre, string escuderia, int victorias, int vueltasRapidas) : PilotoF1(nombre, escuderia, victorias), vueltasRapidas(vueltasRapidas){
+        
+    }
+    int calcularPuntosTotales(int podios2do, int podios3ro) const override{
+        return (victorias * 25) + (podios2do * 18) + (podios3ro * 15) + (vueltasRapidas * 1);
+    }
+};
+
+// ==========================================
+// 3. CLASE DERIVADA: PilotoReserva
+// Hereda de PilotoF1
+// Atributo privado: int carrerasDisputadas
+// Constructor: (nombre, escuderia, victorias, carrerasDisputadas)
+// Regla de puntos:
+//   - Victorias: 25 pts c/u
+//   - Podios 2do lugar: 18 pts c/u
+//   - Podios 3er lugar: 15 pts c/u
+//   - Bonus por carrera disputada: 2 pts c/u
+// ==========================================
+
+// TODO: Implementa la clase PilotoReserva aquí...
+class PilotoReserva : public PilotoF1{
+  private:
+  int carrerasDisputadas;
+  public:
+  PilotoReserva(string nombre, string escuderia, int victorias, int carrerasDisputadas) : PilotoF1(nombre, escuderia, victorias), carrerasDisputadas(carrerasDisputadas){
+      
+  }
+  int calcularPuntosTotales(int podios2do, int podios3ro) const override{
+      return (victorias*25) + (podios2do*18) + (podios3ro*15) + (carrerasDisputadas*2);
+  }
+};
+
+// ==========================================
+// 4. FUNCIÓN AUXILIAR: campeonTemporada
+// Firma: PilotoF1* campeonTemporada(const vector<PilotoF1*>& parrilla, int podios2do, int podios3ro)
+// Retorna el puntero al piloto con mayor cantidad de puntos totales
+// ==========================================
+
+// TODO: Implementa la función auxiliar aquí...
+PilotoF1* campeonTemporada(const vector<PilotoF1*>& parrilla, int podios2do, int podios3ro){
+    PilotoF1* campeon = parrilla[0];
+    for(int i=0; i<parrilla.size(); i++){
+        if(parrilla[i]->calcularPuntosTotales(podios2do, podios3ro)>campeon->calcularPuntosTotales(podios2do, podios3ro)){
+            campeon = parrilla[i];
+        }
+    }
+    return campeon;
+}
+
+// ==========================================
+// 5. MAIN
+// 1. Crear vector<PilotoF1*>
+// 2. Definir variables para podios (ejemplo: 5 podios de 2do lugar, 3 podios de 3er lugar)
+// 3. Agregar con new:
+//    - PilotoTitular("Max Verstappen", "Red Bull", 10, 6)
+//    - PilotoTitular("Lewis Hamilton", "Mercedes AMG", 8, 6)
+//    - PilotoTitular("Valtteri Bottas", "Mercedes AMG", 1, 3)
+//    - PilotoReserva("Robert Kubica", "Alfa Romeo", 0, 2)
+// 4. Recorrer con bucle e imprimir la ficha de cada piloto y sus puntos calculados
+// 5. Imprimir el piloto campeón usando la función auxiliar
+// 6. Liberar memoria con delete
+// ==========================================
+
+int main() {
+    // TODO: Implementa el main aquí...
+    vector <PilotoF1*> pilotos;
+    int podios2do = 5;
+    int podios3ro = 3;
+    pilotos.push_back(new PilotoTitular("Max Verstappen", "Red Bull", 8, 8));
+    pilotos.push_back(new PilotoTitular("Oscar Piastri", "McLaren", 8, 7));
+    pilotos.push_back(new PilotoTitular("George Russell", "Mercedes AMG", 2, 4));
+    pilotos.push_back(new PilotoReserva("Franco Colapinto", "Williams Teams", 0, 3));
+    for(int i=0; i<pilotos.size(); i++){
+        cout << "PILOTO N°" << i+1 << endl;
+        pilotos[i]->mostrarFicha();
+        cout << endl;
+    }
+    cout << "===================================" << endl;
+    cout << "           CAMPEON DE F1 2025" << endl;
+    cout << "===================================" << endl;
+    PilotoF1* campeon = campeonTemporada(pilotos, podios2do, podios3ro);
+    campeon->mostrarFicha();
+    cout << "PUNTOS DEL CAMPEON: " << campeon->calcularPuntosTotales(podios2do, podios3ro) << endl;
+    for(int i=0; i<pilotos.size(); i++){
+        delete pilotos[i];
+    }
+    return 0;
+}
